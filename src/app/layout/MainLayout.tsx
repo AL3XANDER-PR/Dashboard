@@ -18,8 +18,8 @@ import {
 import { useFullscreen } from "@/hooks/useFullscreen";
 import { AppSidebar } from "@/modules/dashboard/components/AppSidebar";
 import { Fullscreen, Maximize, Minimize, Shrink } from "lucide-react";
-import { Outlet } from "react-router-dom";
-import { type JSX } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import React, { type JSX } from "react";
 
 export default function MainLayout(): JSX.Element {
   const { isFullscreen, toggleFullscreen } = useFullscreen();
@@ -60,7 +60,7 @@ export default function MainLayout(): JSX.Element {
             </Button>
             <Separator orientation="vertical" className="mr-2 h-4" />
 
-            <Breadcrumb>
+            {/* <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
@@ -70,7 +70,9 @@ export default function MainLayout(): JSX.Element {
                   <BreadcrumbPage>Home</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
-            </Breadcrumb>
+            </Breadcrumb> */}
+
+            <DynamicBreadcrumb />
           </div>
         </header>
         <div className="flex flex-1 flex-col">
@@ -88,5 +90,57 @@ export default function MainLayout(): JSX.Element {
         </div>
       </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+export function DynamicBreadcrumb() {
+  const location = useLocation();
+
+  const pathnames = location.pathname
+    .split("/")
+    .filter(Boolean)
+    .filter((segment) => isNaN(Number(segment)) && !isUUID(segment)); // Ignora ids y UUIDs
+
+  const fullPaths = pathnames.map(
+    (_, index) => "/" + pathnames.slice(0, index + 1).join("/")
+  );
+
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link to="/">Dashboard</Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+
+        {pathnames.map((segment, index) => {
+          const isLast = index === pathnames.length - 1;
+          const href = fullPaths[index];
+
+          return (
+            <React.Fragment key={href}>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                {isLast ? (
+                  <BreadcrumbPage>{segment}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <Link to={href}>{segment}</Link>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </React.Fragment>
+          );
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
+}
+
+// Helper para detectar si el segmento es UUID
+function isUUID(value: string): boolean {
+  return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(
+    value
   );
 }
