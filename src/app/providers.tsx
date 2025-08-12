@@ -7,6 +7,7 @@ import { useRouteStore } from "@/store/route.store";
 import { publicRoutes } from "./router";
 import { fetchPrivateRoutes } from "@/lib/fetchPrivateRoutes";
 import type { Session } from "@supabase/supabase-js";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,9 @@ export const AppProviders = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 };
