@@ -61,7 +61,6 @@ interface Props {
 }
 
 export const TablaAlumnos = ({ data }: Props) => {
-  console.log("💻 - TablaAlumnos - data:", data);
   const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [pageSize, setPageSize] = useState<number>(5);

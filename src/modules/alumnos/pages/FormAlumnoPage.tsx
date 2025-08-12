@@ -8,6 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
+import CatalogSelect from "../components/Inputs/CatalogSelect";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
 
 export default function FormAlumnoPage() {
   const navigate = useNavigate();
@@ -21,6 +25,29 @@ export default function FormAlumnoPage() {
       // fetchAlumno(id).then(setFormValues)
     }
   }, [isEditMode, id]);
+
+  const schema = z.object({
+    nombre: z.string().min(1, "Nombre requerido"),
+    apellido: z.string().min(1, "Apellido requerido"),
+    tipo_doc: z.string().min(1, "Seleccione tipo de documento"),
+    numero_doc: z.string().min(5, "Número de documento inválido"),
+    emailApoderado: z.string().email("Email inválido").optional(),
+    telefonoApoderado: z.string().optional(),
+  });
+
+  type FormData = z.infer<typeof schema>;
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      nombre: "",
+      apellido: "",
+      tipo_doc: "",
+      numero_doc: "",
+      emailApoderado: "",
+      telefonoApoderado: "",
+    },
+  });
 
   return (
     <div className="p-6 space-y-6">
@@ -83,6 +110,17 @@ export default function FormAlumnoPage() {
                   Teléfono del Apoderado
                 </Label>
                 <Input id="telefonoApoderado" placeholder="999 999 999" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="telefonoApoderado">
+                  Teléfono del Apoderado
+                </Label>
+                <CatalogSelect
+                  catalogo="TIPO_DOC"
+                  value={form.watch("tipo_doc")}
+                  onChange={(v) => form.setValue("tipo_doc", v)}
+                  label="Tipo de documento"
+                />
               </div>
             </div>
 

@@ -33,6 +33,29 @@ export const getAlumnos = async () => {
   // total: count ?? 0,
 };
 
+export async function getAlumnoById(id: string) {
+  const { data, error } = await supabase
+    .from("alumnos")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function saveAlumno(data: Alumno, id?: string) {
+  if (id) {
+    // Update
+    const { error } = await supabase.from("alumnos").update(data).eq("id", id);
+    if (error) throw error;
+  } else {
+    // Insert
+    const { error } = await supabase.from("alumnos").insert([data]);
+    if (error) throw error;
+  }
+}
+
 // export const getAlumnoById = async (id: string): Promise<Alumno | null> => {
 //   const { data, error } = await supabase
 //     .from<Alumno>("alumnos")
