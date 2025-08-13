@@ -1,4 +1,3 @@
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -8,38 +7,43 @@ import {
 } from "@/components/ui/select";
 import { useDetalleCatalogo } from "../../hooks/useDetalleCatalogo";
 
-interface CatalogSelectProps {
+type CatalogSelectProps = {
   catalogo: string;
   value?: string;
   onChange: (value: string) => void;
-  label?: string;
-}
+  placeholder?: string;
+  disabled?: boolean;
+};
 
 export default function CatalogSelect({
   catalogo,
   value,
   onChange,
-  label,
+  placeholder = "Seleccione una opción",
+  disabled = false,
 }: CatalogSelectProps) {
-  const { data: items, isLoading } = useDetalleCatalogo(catalogo);
+  // console.log("💻 - CatalogSelect - catalogo:", catalogo);
+  // console.log("💻 - CatalogSelect - value:", value);
+  const { data: opciones, isLoading, isError } = useDetalleCatalogo(catalogo);
+
+  if (isLoading) return null;
 
   return (
-    <div className="space-y-2">
-      {label && <Label>{label}</Label>}
-      <Select value={value} onValueChange={onChange} disabled={isLoading}>
-        <SelectTrigger>
-          <SelectValue
-            placeholder={isLoading ? "Cargando..." : "Seleccione..."}
-          />
-        </SelectTrigger>
-        <SelectContent>
-          {items?.map((item) => (
-            <SelectItem key={item.id} value={item.id}>
-              {item.nombre}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Select
+      disabled={isLoading || disabled}
+      onValueChange={onChange}
+      value={value ? String(value) : ""}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent>
+        {opciones?.map((item) => (
+          <SelectItem key={item.id} value={String(item.id)}>
+            {item.nombre}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

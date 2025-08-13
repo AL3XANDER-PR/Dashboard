@@ -44,16 +44,27 @@ export async function getAlumnoById(id: string) {
   return data;
 }
 
-export async function saveAlumno(data: Alumno, id?: string) {
-  if (id) {
-    // Update
-    const { error } = await supabase.from("alumnos").update(data).eq("id", id);
-    if (error) throw error;
-  } else {
-    // Insert
-    const { error } = await supabase.from("alumnos").insert([data]);
-    if (error) throw error;
-  }
+export async function createAlumno(alumno: Alumno) {
+  const { data, error } = await supabase
+    .from("alumnos")
+    .insert([alumno])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateAlumno(id: string, alumno: Alumno) {
+  const { data, error } = await supabase
+    .from("alumnos")
+    .update(alumno)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 }
 
 // export const getAlumnoById = async (id: string): Promise<Alumno | null> => {

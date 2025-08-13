@@ -1,22 +1,32 @@
 // pages/alumnos/FormAlumnoPage.tsx
-"use client";
 
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import CatalogSelect from "../components/Inputs/CatalogSelect";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import { useAlumnoById } from "../hooks/useAlumnoById";
+import { useSaveAlumno } from "../hooks/useSaveAlumno";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 export default function FormAlumnoPage() {
   const navigate = useNavigate();
   const { id } = useParams(); // id viene solo si es edición
   const isEditMode = Boolean(id);
+  const { data: alumno } = useAlumnoById(id);
+  const saveAlumno = useSaveAlumno(id);
 
   // 📝 Aquí luego puedes hacer fetch de datos si estás en edición
   useEffect(() => {
@@ -27,12 +37,15 @@ export default function FormAlumnoPage() {
   }, [isEditMode, id]);
 
   const schema = z.object({
-    nombre: z.string().min(1, "Nombre requerido"),
-    apellido: z.string().min(1, "Apellido requerido"),
-    tipo_doc: z.string().min(1, "Seleccione tipo de documento"),
+    nombres: z.string().min(1, "Nombre requerido"),
+    apellido_paterno: z.string().min(1, "Apellido Paterno requerido"),
+    apellido_materno: z.string().min(1, "Apellido Materno requerido"),
+    tipo_documento: z.string().min(1, "Seleccione tipo de documento"),
+    genero_id: z.string().min(1, "Seleccione tipo de documento"),
+    grado_id: z.string().min(1, "Seleccione tipo de documento"),
+    seccion_id: z.string().min(1, "Seleccione tipo de documento"),
     numero_doc: z.string().min(5, "Número de documento inválido"),
-    emailApoderado: z.string().email("Email inválido").optional(),
-    telefonoApoderado: z.string().optional(),
+    email: z.string().email("Email inválido").optional(),
   });
 
   type FormData = z.infer<typeof schema>;
@@ -40,18 +53,31 @@ export default function FormAlumnoPage() {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      nombre: "",
-      apellido: "",
-      tipo_doc: "",
+      nombres: "",
+      apellido_paterno: "",
+      apellido_materno: "",
+      tipo_documento: "",
+      genero_id: "",
+      grado_id: "",
+      seccion_id: "",
       numero_doc: "",
-      emailApoderado: "",
-      telefonoApoderado: "",
+      email: "",
     },
   });
 
+  useEffect(() => {
+    console.log("💻 - FormAlumnoPage - alumno:", alumno);
+    if (alumno) {
+      form.reset(alumno);
+    }
+  }, [alumno, form]);
+
+  function onSubmit(data: FormData) {
+    console.log("💻 - onSubmit - data:", data);
+  }
+
   return (
     <div className="p-6 space-y-6">
-      {/* Header con botón volver */}
       <div className="flex items-center gap-4">
         <Button
           variant="outline"
@@ -65,7 +91,6 @@ export default function FormAlumnoPage() {
         </h1>
       </div>
 
-      {/* Formulario */}
       <Card>
         <CardHeader>
           <CardTitle>
@@ -73,70 +98,158 @@ export default function FormAlumnoPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="nombre">Nombre</Label>
-                <Input id="nombre" placeholder="Juan" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="apellido">Apellido</Label>
-                <Input id="apellido" placeholder="Pérez" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edad">Edad</Label>
-                <Input
-                  id="edad"
-                  type="number"
-                  min="3"
-                  max="20"
-                  placeholder="12"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="nombres"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nombre</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nombre" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="grado">Grado</Label>
-                <Input id="grado" placeholder="6to de primaria" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="emailApoderado">Email del Apoderado</Label>
-                <Input
-                  id="emailApoderado"
-                  type="email"
-                  placeholder="apoderado@email.com"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="telefonoApoderado">
-                  Teléfono del Apoderado
-                </Label>
-                <Input id="telefonoApoderado" placeholder="999 999 999" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="telefonoApoderado">
-                  Teléfono del Apoderado
-                </Label>
-                <CatalogSelect
-                  catalogo="TIPO_DOC"
-                  value={form.watch("tipo_doc")}
-                  onChange={(v) => form.setValue("tipo_doc", v)}
-                  label="Tipo de documento"
-                />
-              </div>
-            </div>
 
-            <div className="flex justify-end gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/alumnos")}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit">
-                {isEditMode ? "Actualizar" : "Guardar"}
-              </Button>
-            </div>
-          </form>
+                <FormField
+                  control={form.control}
+                  name="apellido_paterno"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Apellido</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Apellido" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="apellido_materno"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Apellido</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Apellido" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="tipo_documento"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de documento</FormLabel>
+                      <CatalogSelect
+                        catalogo="TIPO_DOC"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="numero_doc"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Número documento</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Número documento" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Email" type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="genero_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Genero</FormLabel>
+                      <CatalogSelect
+                        catalogo="GENERO"
+                        value={field.value}
+                        onChange={field.onChange}
+                        // placeholder="Seleccione tipo de documento"
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="grado_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Grado</FormLabel>
+                      <CatalogSelect
+                        catalogo="GRADO"
+                        value={field.value}
+                        onChange={field.onChange}
+                        // placeholder="Seleccione tipo de documento"
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="seccion_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Seccion</FormLabel>
+                      <CatalogSelect
+                        catalogo="SECCION"
+                        value={field.value}
+                        onChange={field.onChange}
+                        // placeholder="Seleccione tipo de documento"
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/alumnos")}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit">
+                  {isEditMode ? "Actualizar" : "Guardar"}
+                </Button>
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

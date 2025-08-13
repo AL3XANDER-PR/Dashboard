@@ -1,5 +1,6 @@
 import { AlumnosStats } from "../components/AlumnosStats";
 import { TablaAlumnos } from "../components/TablaAlumnos";
+import { useAlumnos } from "../hooks/useAlumnos";
 import { getAlumnos } from "../services/alumnos.service";
 import { useQuery } from "@tanstack/react-query";
 
@@ -23,8 +24,7 @@ export type Alumno = {
 // Component
 // -----------------------------
 export default function AlumnosPage() {
-  const query = useQuery({ queryKey: ["alumnoss"], queryFn: getAlumnos });
-  console.log("💻 - AlumnosPage - query:", query);
+  const query = useAlumnos();
 
   return (
     <div className="flex flex-col gap-4">
