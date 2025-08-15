@@ -24,12 +24,21 @@ export const getAlumnos = async () => {
       nombre
     )
   `);
+
+  const alumnos = data?.map((a) => ({
+    ...a,
+    tipo_documento: a.tipo_documento?.nombre,
+    genero_id: a.genero_id?.nombre,
+    estado_id: a.estado_id?.nombre,
+    seccion_id: a.seccion_id?.nombre,
+    grado_id: a.grado_id?.nombre,
+  }));
   // .order("created_at");
   // .range(from, to);
 
   if (error) throw error;
 
-  return data;
+  return alumnos;
   // total: count ?? 0,
 };
 

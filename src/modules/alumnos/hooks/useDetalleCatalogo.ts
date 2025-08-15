@@ -7,5 +7,7 @@ export const useDetalleCatalogo = (catalogo: string) => {
     queryFn: () => getDetalleCatalogo(catalogo),
     enabled: !!catalogo, // no consulta si es undefined/null
     staleTime: 1000 * 60 * 5, // cache 5 minutos
+    gcTime: 1000 * 60 * 10,
+    placeholderData: (prev) => prev,
   });
 };

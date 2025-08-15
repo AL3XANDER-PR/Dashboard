@@ -1,20 +1,33 @@
 // modules/alumnos/components/Inputs/CatalogSelectField.tsx
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Control, type FieldPath, type FieldValues } from "react-hook-form";
+import {
+  type Control,
+  type FieldPath,
+  type FieldValues,
+} from "react-hook-form";
 import { useDetalleCatalogo } from "../../hooks/useDetalleCatalogo";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 type CatalogSelectFieldProps<TFieldValues extends FieldValues> = {
   control: Control<TFieldValues>;
@@ -30,46 +43,79 @@ export function CatalogSelectField<TFieldValues extends FieldValues>({
   name,
   catalogo,
   label,
-  placeholder = "Seleccione una opción",
-  disabled = false,
 }: CatalogSelectFieldProps<TFieldValues>) {
-  const { data: opciones, isLoading } = useDetalleCatalogo(catalogo);
+  const {
+    data: opciones = [],
+    isLoading,
+    isError,
+  } = useDetalleCatalogo(catalogo); // siempre array
 
   return (
     <FormField
       control={control}
       name={name}
-      render={({ field }) => {
-        const stringValue =
-          field.value !== undefined && field.value !== null
-            ? String(field.value) // Radix Select siempre trabaja en string
-            : undefined; // placeholder visible
-
-        return (
-          <FormItem>
-            {label && <FormLabel>{label}</FormLabel>}
-            <Select
-              disabled={disabled || isLoading}
-              value={stringValue}
-              onValueChange={(v) => field.onChange(Number(v))} // <- volvemos a number para el form
-            >
+      render={({ field }) => (
+        <FormItem className="flex flex-col">
+          <FormLabel>{label}</FormLabel>
+          <Popover>
+            <PopoverTrigger asChild>
               <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder={placeholder} />
-                </SelectTrigger>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className={cn(
+                    " justify-between",
+                    !field.value && "text-muted-foreground"
+                  )}
+                  disabled={isLoading || isError}
+                >
+                  {isLoading && "Cargando..."}
+                  {isError && "Error"}
+                  {!isLoading &&
+                    !isError &&
+                    (field.value
+                      ? opciones.find(
+                          (op: any) => String(op.id) === String(field.value)
+                        )?.nombre
+                      : `Seleccionar ${label}`)}
+                  <ChevronsUpDown className="opacity-50" />
+                </Button>
               </FormControl>
-              <SelectContent>
-                {opciones?.map((opt) => (
-                  <SelectItem key={opt.id} value={String(opt.id)}>
-                    {opt.nombre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        );
-      }}
+            </PopoverTrigger>
+            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+              <Command>
+                <CommandInput
+                  placeholder={`Buscar ${label}...`}
+                  className="h-9"
+                />
+                <CommandList>
+                  <CommandEmpty>No encontrado.</CommandEmpty>
+                  <CommandGroup>
+                    {opciones.map((op: any) => (
+                      <CommandItem
+                        value={op.nombre}
+                        key={op.id}
+                        onSelect={() => field.onChange(String(op.id))}
+                      >
+                        {op.nombre}
+                        <Check
+                          className={cn(
+                            "ml-auto",
+                            String(op.id) === String(field.value)
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          <FormMessage />
+        </FormItem>
+      )}
     />
   );
 }

@@ -122,12 +122,12 @@ export const TablaAlumnos = ({ data }: Props) => {
       header: "Estado",
       cell: ({ row }) => (
         <Badge variant="outline" className="text-muted-foreground px-1.5">
-          {row.original.estado_id.nombre === "Activo" ? (
+          {row.original?.estado_id === "Activo" ? (
             <CircleCheck className="fill-green-500 dark:fill-green-500 text-white " />
           ) : (
             <ShieldX className="fill-red-500 dark:fill-red-500 text-white " />
           )}
-          {row.original.estado_id.nombre}
+          {row.original.estado_id}
         </Badge>
       ),
     },
@@ -136,7 +136,7 @@ export const TablaAlumnos = ({ data }: Props) => {
       header: "Grado / Sección",
       cell: ({ row }) => (
         <Badge variant="outline" className="text-muted-foreground px-1.5">
-          {row.original.grado_id.nombre} {row.original.seccion_id.nombre}
+          {row.original.grado_id} {row.original.seccion_id}
         </Badge>
       ),
     },
@@ -176,7 +176,7 @@ export const TablaAlumnos = ({ data }: Props) => {
   ];
 
   const table = useReactTable({
-    data,
+    data: data ?? [],
     columns,
     state: {
       globalFilter,

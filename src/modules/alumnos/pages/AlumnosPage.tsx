@@ -1,8 +1,6 @@
 import { AlumnosStats } from "../components/AlumnosStats";
 import { TablaAlumnos } from "../components/TablaAlumnos";
 import { useAlumnos } from "../hooks/useAlumnos";
-import { getAlumnos } from "../services/alumnos.service";
-import { useQuery } from "@tanstack/react-query";
 
 // -----------------------------
 // Types
@@ -17,6 +15,11 @@ export type Alumno = {
   seccion?: string;
   estado?: "Activo" | "Inactivo";
   img?: string; // url opcional
+  tipo_documento: string;
+  genero_id: string;
+  estado_id: string;
+  grado_id: string;
+  seccion_id: string;
   // otras propiedades que quieras
 };
 
@@ -25,11 +28,10 @@ export type Alumno = {
 // -----------------------------
 export default function AlumnosPage() {
   const query = useAlumnos();
-
   return (
     <div className="flex flex-col gap-4">
       <AlumnosStats />
-      <TablaAlumnos data={query?.data ?? []} />
+      <TablaAlumnos data={query.data ?? []} />
     </div>
   );
 }
