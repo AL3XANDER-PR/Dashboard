@@ -5,6 +5,5 @@ export const useAlumnos = (/* page: number, pageSize: number */) => {
   return useQuery({
     queryKey: ["alumnos"],
     queryFn: getAlumnos,
-    // keepPreviousData: true,
   });
 };

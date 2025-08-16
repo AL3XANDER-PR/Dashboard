@@ -12,10 +12,7 @@ export default function AuthLayout(): JSX.Element {
             href="#"
             className="flex items-center gap-2 font-medium text-accent dark:bg-transparent dark:text-accent-foreground bg-foreground/30 p-2 rounded-2xl"
           >
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              {/* <GalleryVerticalEnd className="size-4" /> */}
-              {/* <DarkModeToggle /> */}
-            </div>
+            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md"></div>
             <span className="">Acme Inc.</span>
           </a>
         </div>
@@ -28,16 +25,13 @@ export default function AuthLayout(): JSX.Element {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start lg:hidden">
           <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              {/* <DarkModeToggle /> */}
-            </div>
+            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md"></div>
             <span className="text-accent-foreground">Acme Inc.</span>
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-sm">
             <Outlet />
-            {/* {children} */}
           </div>
         </div>
       </div>

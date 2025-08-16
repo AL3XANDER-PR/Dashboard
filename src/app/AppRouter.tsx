@@ -1,4 +1,3 @@
-// src/app/AppRouter.tsx
 import { useRouteStore } from "@/store/route.store";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useMemo } from "react";

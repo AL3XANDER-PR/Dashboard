@@ -60,18 +60,6 @@ export default function MainLayout(): JSX.Element {
             </Button>
             <Separator orientation="vertical" className="mr-2 h-4" />
 
-            {/* <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Home</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb> */}
-
             <DynamicBreadcrumb />
           </div>
         </header>

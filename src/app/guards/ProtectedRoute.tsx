@@ -5,7 +5,6 @@ import { DashboardProvider } from "@/components/dashboard-provider";
 export default function ProtectedRoute() {
   const user = useAuthStore((s) => s.user);
   const loading = useAuthStore((s) => s.loading);
-  // console.log("💻 - ProtectedRoute:", loading);
 
   if (loading) return null;
 

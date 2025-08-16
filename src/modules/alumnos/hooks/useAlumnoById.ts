@@ -7,7 +7,5 @@ export const useAlumnoById = (id?: string) => {
     queryFn: () => getAlumnoById(id!),
     enabled: !!id, // solo ejecuta si existe id
     staleTime: 1000 * 60 * 5, // cache 5 minutos
-
-    // keepPreviousData: true,
   });
 };

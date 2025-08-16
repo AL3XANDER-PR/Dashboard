@@ -48,13 +48,11 @@ export const AlumnosStats = ({
       {stats.map((stat, i) => (
         <Card key={i} className={`  border-none shadow-sm py-0`}>
           <CardContent className="flex justify-between items-center p-4">
-            {/* Texto */}
             <div>
               <p className="text-2xl font-bold">{stat.value}</p>
               <p className="text-sm text-accent-foreground">{stat.title}</p>
             </div>
 
-            {/* Icono */}
             <div className="relative">
               <div
                 className={`absolute inset-0 bg-gradient-to-bl from-${stat.color}-500/20 to-transparent rounded-xl`}
