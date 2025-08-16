@@ -70,7 +70,7 @@ export default function AlumnoDetailsPage() {
   }, [id, periodo]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="flex flex-col gap-4">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -206,7 +206,7 @@ export default function AlumnoDetailsPage() {
         <TabsContent value="notas">
           <Card>
             <CardContent className="p-4">
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={300} debounce={200}>
                 <BarChart data={notasData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="materia" />

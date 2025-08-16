@@ -17,10 +17,10 @@ import {
 //   EditPage: lazy(() => import("@/modules/dashboard/pages/EditPage")),
 // } as const satisfies Record<string, LazyExoticComponent<FC>>;
 
-const modules = import.meta.glob([
-  "@/modules/**/pages/**/*.tsx",
-  "@/shared/pages/**/*.tsx",
-]);
+const modules = import.meta.glob(
+  ["@/modules/**/pages/**/*.tsx", "@/shared/pages/**/*.tsx"],
+  { eager: false } // 👈 clave para que NO se importe al inicio
+);
 
 // Crea el mapa dinámico
 export const COMPONENTS_MAP = Object.entries(modules).reduce(

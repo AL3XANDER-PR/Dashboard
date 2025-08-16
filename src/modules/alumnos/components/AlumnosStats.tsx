@@ -6,12 +6,12 @@ interface Props {
   TCursos?: number;
   Tasistencias?: number;
 }
-export const AlumnosStats = ({
+export default function AlumnosStats({
   TAlumnos = 0,
   TProfesores = 0,
   TCursos = 0,
   Tasistencias = 0,
-}: Props) => {
+}: Props) {
   const stats = [
     {
       title: "Total Alumnos",
@@ -44,13 +44,15 @@ export const AlumnosStats = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
       {stats.map((stat, i) => (
         <Card key={i} className={`  border-none shadow-sm py-0`}>
           <CardContent className="flex justify-between items-center p-4">
             <div>
               <p className="text-2xl font-bold">{stat.value}</p>
-              <p className="text-sm text-accent-foreground">{stat.title}</p>
+              <p className="text-xs lg:text-sm text-accent-foreground">
+                {stat.title}
+              </p>
             </div>
 
             <div className="relative">
@@ -68,4 +70,4 @@ export const AlumnosStats = ({
       ))}
     </div>
   );
-};
+}

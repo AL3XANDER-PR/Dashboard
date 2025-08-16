@@ -10,7 +10,10 @@ export const getAlumnos = async () => {
   // const from = (page - 1) * pageSize;
   // const to = from + pageSize - 1;
 
-  const { data, error } = await supabase.from("alumnos").select(`
+  const { data, error } = await supabase
+    .from("alumnos")
+    .select(
+      `
     *,
      tipo_documento (
       nombre
@@ -23,7 +26,9 @@ export const getAlumnos = async () => {
     ),seccion_id (
       nombre
     )
-  `);
+  `
+    )
+    .order("codigo");
 
   const alumnos = data?.map((a) => ({
     ...a,
@@ -33,7 +38,6 @@ export const getAlumnos = async () => {
     seccion_id: a.seccion_id?.nombre,
     grado_id: a.grado_id?.nombre,
   }));
-  // .order("created_at");
   // .range(from, to);
 
   if (error) throw error;

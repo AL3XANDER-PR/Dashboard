@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
-import { CatalogSelectField } from "../components/Inputs/CatalogSelect";
 import { useForm, type DefaultValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -19,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { SelectInput } from "../components/Inputs/SelectInput";
 
 export default function FormAlumnoPage() {
   const navigate = useNavigate();
@@ -179,30 +179,69 @@ export default function FormAlumnoPage() {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Email" type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <CatalogSelectField
+                {/* <CatalogSelectField
+                  control={form.control}
+                  name="tipo_documento"
+                  catalogo="TIPO_DOC"
+                  label="Tipo de documento"
+                /> */}
+
+                <SelectInput
                   control={form.control}
                   name="tipo_documento"
                   catalogo="TIPO_DOC"
                   label="Tipo de documento"
                 />
-                <CatalogSelectField
+                {/* <CatalogSelectField
+                  control={form.control}
+                  name="genero_id"
+                  catalogo="GENERO"
+                  label="Género"
+                /> */}
+                <SelectInput
                   control={form.control}
                   name="genero_id"
                   catalogo="GENERO"
                   label="Género"
                 />
-                <CatalogSelectField
+                {/* <CatalogSelectField
                   control={form.control}
                   name="grado_id"
                   catalogo="GRADO"
                   label="Grado"
-                />
-                <CatalogSelectField
+                /> */}
+
+                {/* <CatalogSelectField
                   control={form.control}
                   name="seccion_id"
                   catalogo="SECCION"
                   label="Sección"
+                /> */}
+                <SelectInput
+                  control={form.control}
+                  name="seccion_id"
+                  catalogo="SECCION"
+                  label="Sección"
+                />
+                <SelectInput
+                  control={form.control}
+                  name="grado_id"
+                  catalogo="GRADO"
+                  label="Grado"
                 />
               </div>
 

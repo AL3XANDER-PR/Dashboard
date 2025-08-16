@@ -1,6 +1,6 @@
-import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+// import * as XLSX from "xlsx";
+// import jsPDF from "jspdf";
+// import autoTable from "jspdf-autotable";
 
 import {
   flexRender,
@@ -55,12 +55,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import MobileAlumnosList from "./MobileAlumnosList";
 
 interface Props {
   data?: Alumno[];
 }
 
-export const TablaAlumnos = ({ data }: Props) => {
+export default function TablaAlumnos({ data }: Props) {
   const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [pageSize, setPageSize] = useState<number>(5);
@@ -140,7 +141,6 @@ export const TablaAlumnos = ({ data }: Props) => {
         </Badge>
       ),
     },
-
     {
       id: "actions",
       enableHiding: false,
@@ -200,14 +200,16 @@ export const TablaAlumnos = ({ data }: Props) => {
     // setData((prev) => prev.filter((p) => p.id !== id));
   }
 
-  function exportToExcel(rows: Alumno[]) {
+  async function exportToExcel(rows: Alumno[]) {
+    const XLSX = await import("xlsx");
     const sheetData = rows.map((r) => ({
-      ID: r.id,
+      Codigo: r.codigo,
       Nombre: r.nombres,
+      Apellidos: `${r.apellido_paterno} ${r.apellido_materno}`,
       Email: r.email ?? "",
-      Grado: r.grado ?? "",
-      Sección: r.seccion ?? "",
-      Estado: r.estado ?? "",
+      Grado: r.grado_id ?? "",
+      Sección: r.seccion_id ?? "",
+      Estado: r.estado_id ?? "",
     }));
     const ws = XLSX.utils.json_to_sheet(sheetData);
     const wb = XLSX.utils.book_new();
@@ -215,26 +217,90 @@ export const TablaAlumnos = ({ data }: Props) => {
     XLSX.writeFile(wb, "alumnos.xlsx");
   }
 
-  function exportToPDF(rows: Alumno[]) {
-    const doc = new jsPDF({ orientation: "landscape" });
-    const head = [["ID", "Nombre", "Email", "Grado", "Sección", "Estado"]];
-    const body = rows.map((r) => [
-      r.id,
-      r.nombres,
-      r.email ?? "",
-      r.grado ?? "",
-      r.seccion ?? "",
-      r.estado ?? "",
-    ]);
-    autoTable(doc, {
-      head,
-      body,
-      startY: 10,
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [60, 60, 60] },
+  async function exportToPDF(rows: Alumno[]) {
+    const { default: jsPDF } = await import("jspdf");
+    const autoTable = (await import("jspdf-autotable")).default;
+    const doc = new jsPDF({
+      orientation: "landscape",
+      unit: "pt",
+      format: "A4",
     });
 
-    doc.save("alumnos.pdf");
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Encabezado
+    doc.setFontSize(14);
+    doc.setFillColor(173, 216, 230); // color celeste
+    doc.rect(40, 20, pageWidth - 80, 30, "F");
+    doc.text("LISTA DE ASISTENCIA", pageWidth / 2, 40, { align: "center" });
+
+    // Datos del plantel
+    doc.setFontSize(10);
+    const startY = 60;
+    doc.rect(40, startY, 150, 20);
+    doc.text("PLANTEL", 45, startY + 15);
+    doc.rect(190, startY, 300, 20); // valor
+    doc.rect(500, startY, 100, 20);
+    doc.text("MES", 505, startY + 15);
+    doc.rect(600, startY, 100, 20); // valor
+
+    // Más campos (Asignatura, Profesor, Fecha, Grado, Grupo)
+    const infoY = startY + 25;
+    const cellHeight = 20;
+    doc.rect(40, infoY, 150, cellHeight);
+    doc.text("ASIGNATURA", 45, infoY + 15);
+    doc.rect(190, infoY, 300, cellHeight); // valor
+    doc.rect(500, infoY, 100, cellHeight);
+    doc.text("PROFESOR", 505, infoY + 15);
+    doc.rect(600, infoY, 100, cellHeight); // valor
+
+    const rowY = infoY + 25;
+    doc.rect(40, rowY, 100, cellHeight);
+    doc.text("FECHA", 45, rowY + 15);
+    doc.rect(140, rowY, 100, cellHeight); // valor
+    doc.rect(240, rowY, 100, cellHeight);
+    doc.text("GRADO", 245, rowY + 15);
+    doc.rect(340, rowY, 100, cellHeight); // valor
+    doc.rect(440, rowY, 100, cellHeight);
+    doc.text("GRUPO", 445, rowY + 15);
+    doc.rect(540, rowY, 100, cellHeight); // valor
+
+    // Tabla de asistencia
+    const tableHead = ["No.", "No. CONTROL", "NOMBRE DEL ALUMNO"];
+    for (let i = 1; i <= 30; i++) tableHead.push(i.toString());
+
+    const tableBody = rows.map((a, idx) => {
+      const row = [idx + 1, a.codigo, a.nombres];
+      for (let i = 0; i < 30; i++) row.push(""); // columnas de asistencia
+      return row;
+    });
+
+    autoTable(doc, {
+      head: [tableHead],
+      body: tableBody,
+      startY: rowY + 50,
+      styles: { fontSize: 8, cellPadding: 3 },
+      headStyles: { fillColor: [173, 216, 230] },
+    });
+
+    // Leyenda
+    const legendY = doc.lastAutoTable.finalY + 20;
+    doc.rect(40, legendY, 15, 15);
+    doc.text("• ASISTENCIA", 60, legendY + 12);
+    doc.rect(160, legendY, 15, 15);
+    doc.text("/ RETARDO", 180, legendY + 12);
+    doc.rect(260, legendY, 15, 15);
+    doc.text("X FALTA", 280, legendY + 12);
+
+    // Firmas
+    const firmaY = legendY + 50;
+    doc.text("_____________________________________", 40, firmaY);
+    doc.text("NOMBRE Y FIRMA DEL DOCENTE", 50, firmaY + 12);
+
+    doc.text("_____________________________________", 400, firmaY);
+    doc.text("NOMBRE Y FIRMA DEL DIRECTOR", 410, firmaY + 12);
+
+    doc.save("lista_asistencia.pdf");
   }
 
   // muestra export de todas las filas filtradas (no solo la página)
@@ -275,66 +341,7 @@ export const TablaAlumnos = ({ data }: Props) => {
       {isMobile ? (
         // MODO TARJETAS: mejor experiencia en móvil
         <div className="grid grid-cols-1 gap-4">
-          {table.getRowModel().rows.map((row) => {
-            const a = row.original;
-            const initials = a.nombres
-              .split(" ")
-              .map((n) => n[0])
-              .slice(0, 2)
-              .join("")
-              .toUpperCase();
-            return (
-              <Card key={a.id} className="p-3">
-                <div className="flex items-start gap-3">
-                  <Avatar className="h-12 w-12">
-                    {a.img ? (
-                      <AvatarImage src={a.img} alt={a.nombres} />
-                    ) : (
-                      <AvatarFallback>{initials}</AvatarFallback>
-                    )}
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <button
-                          className="text-sm font-semibold text-primary hover:underline"
-                          onClick={() => navigate(`/alumnos/details/${a.id}`)}
-                        >
-                          {a.nombres}
-                        </button>
-                        <div className="text-xs text-muted-foreground">
-                          {a.email}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium">{a.grado}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {a.seccion}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 mt-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate(`/alumnos/edit/${a.id}`)}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(a.id)}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
+          <MobileAlumnosList rows={table.getRowModel().rows} />
         </div>
       ) : (
         // MODO TABLA (desktop / tablet)
@@ -475,4 +482,4 @@ export const TablaAlumnos = ({ data }: Props) => {
       </div>
     </>
   );
-};
+}

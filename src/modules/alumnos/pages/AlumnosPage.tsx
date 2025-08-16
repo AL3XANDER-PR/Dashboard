@@ -1,5 +1,4 @@
-import { AlumnosStats } from "../components/AlumnosStats";
-import { TablaAlumnos } from "../components/TablaAlumnos";
+import { lazy, Suspense } from "react";
 import { useAlumnos } from "../hooks/useAlumnos";
 
 // -----------------------------
@@ -7,6 +6,7 @@ import { useAlumnos } from "../hooks/useAlumnos";
 // -----------------------------
 export type Alumno = {
   id: string;
+  codigo: string;
   nombres: string;
   apellido_paterno: string;
   apellido_materno: string;
@@ -23,6 +23,13 @@ export type Alumno = {
   // otras propiedades que quieras
 };
 
+const TablaAlumnos = lazy(
+  () => import("@/modules/alumnos/components/TablaAlumnos")
+);
+const AlumnosStats = lazy(
+  () => import("@/modules/alumnos/components/AlumnosStats")
+);
+
 // -----------------------------
 // Component
 // -----------------------------
@@ -30,8 +37,10 @@ export default function AlumnosPage() {
   const query = useAlumnos();
   return (
     <div className="flex flex-col gap-4">
-      <AlumnosStats />
-      <TablaAlumnos data={query.data ?? []} />
+      <Suspense fallback={<div>Cargando tabla...</div>}>
+        <AlumnosStats />
+        <TablaAlumnos data={query.data ?? []} />
+      </Suspense>
     </div>
   );
 }
