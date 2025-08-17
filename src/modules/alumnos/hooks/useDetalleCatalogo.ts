@@ -8,6 +8,6 @@ export const useDetalleCatalogo = (catalogo: string) => {
     enabled: !!catalogo, // no consulta si es undefined/null
     staleTime: 1000 * 60 * 5, // cache 5 minutos
     gcTime: 1000 * 60 * 10,
-    placeholderData: (prev) => prev,
+    // refetchOnWindowFocus: "always",
   });
 };

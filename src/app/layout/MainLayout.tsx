@@ -20,6 +20,7 @@ import { AppSidebar } from "@/modules/dashboard/components/AppSidebar";
 import { Fullscreen, Maximize, Minimize, Shrink } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import React, { type JSX } from "react";
+import Sidebar from "@/shared/components/SideBar";
 
 export default function MainLayout(): JSX.Element {
   const { isFullscreen, toggleFullscreen } = useFullscreen();
@@ -32,8 +33,9 @@ export default function MainLayout(): JSX.Element {
   return (
     <SidebarProvider className="">
       <AppSidebar variant="sidebar" />
+
       <SidebarInset>
-        <header className="bg-background/70 sticky top-0 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b  backdrop-blur-md shadow-md translate-y-0 z-50">
+        <header className="bg-background/70 sticky top-0 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear  backdrop-blur-md translate-y-0 z-50">
           <div className="flex items-center gap-2   px-6 lg:px-12">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="h-4" />
