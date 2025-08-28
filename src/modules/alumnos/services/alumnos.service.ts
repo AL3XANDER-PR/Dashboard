@@ -7,54 +7,48 @@ export type GetAlumnosResponse = {
 };
 
 export const getAlumnos = async () => {
-  // const from = (page - 1) * pageSize;
-  // const to = from + pageSize - 1;
+  try {
+    const response = await fetch(`${import.meta.env.BASE_URL}/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${token}`, // 👈 si necesitas token
+      },
+    });
 
-  const { data, error } = await supabase
-    .from("alumnos")
-    .select(
-      `
-    *,
-     tipo_documento (
-      nombre
-    ),genero_id (
-      nombre
-    ),estado_id (
-      nombre
-    ),grado_id (
-      nombre
-    ),seccion_id (
-      nombre
-    )
-  `
-    )
-    .order("codigo");
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
 
-  const alumnos = data?.map((a) => ({
-    ...a,
-    tipo_documento: a.tipo_documento?.nombre,
-    genero_id: a.genero_id?.nombre,
-    estado_id: a.estado_id?.nombre,
-    seccion_id: a.seccion_id?.nombre,
-    grado_id: a.grado_id?.nombre,
-  }));
-  // .range(from, to);
-
-  if (error) throw error;
-
-  return alumnos;
-  // total: count ?? 0,
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al traer usuarios:", error);
+    throw error;
+  }
 };
 
 export async function getAlumnoById(id: string) {
-  const { data, error } = await supabase
-    .from("alumnos")
-    .select("*")
-    .eq("id", id)
-    .single();
+  try {
+    const response = await fetch(`${import.meta.env.BASE_URL}/users/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  if (error) throw error;
-  return data;
+    if (!response.ok) {
+      throw new Error(
+        `Error ${response.status}: No se pudo obtener el usuario`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al traer usuario:", error);
+    throw error;
+  }
 }
 
 export async function createAlumno(alumno: Alumno) {

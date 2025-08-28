@@ -1,23 +1,19 @@
 // src/lib/fetchPrivateRoutes.ts
 import type { DBRoute } from "@/app/router/types";
-import { supabase } from "@/lib/supabase";
-
+import Axios from "./apiClient";
+import type { AxiosError } from "axios";
+interface ErrorResponse {
+  message: string;
+}
 export async function fetchPrivateRoutes(): Promise<DBRoute[]> {
   try {
-    const { data, error } = await supabase
-      .from("routes")
-      .select("*")
-      .eq("guard", "private")
-      .eq("active", true);
-
-    // if (!data) throw new Error("Error en fetch de rutas");
-    if (error) {
-      console.error("❌ Error al obtener rutas privadas:", error);
-      throw error;
-    }
-    return data; // o lo que corresponda
+    const response = await Axios.get("routes");
+    return response.data;
   } catch (err) {
-    console.error("❌ Error en fetchPrivateRoutes:", err);
-    return []; // o lanza el error si lo necesitas
+    const error = err as AxiosError<ErrorResponse>;
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Error de conexión con el servidor");
   }
 }

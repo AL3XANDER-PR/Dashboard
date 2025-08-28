@@ -31,10 +31,10 @@ export default function FormAlumnoPage() {
     apellido_paterno: z.string().min(1, "Apellido Paterno requerido"),
     apellido_materno: z.string().min(1, "Apellido Materno requerido"),
     tipo_documento: z.string().min(1, "Seleccione tipo de documento"),
-    genero_id: z.string().min(1, "Seleccione género"),
+    genero: z.string().min(1, "Seleccione género"),
     grado_id: z.string().min(1, "Seleccione grado"),
     seccion_id: z.string().min(1, "Seleccione sección"),
-    numero_doc: z.string().min(5, "Número de documento inválido"),
+    numero_documento: z.string().min(5, "Número de documento inválido"),
     email: z.string().email("Email inválido").optional().or(z.literal("")),
   });
 
@@ -46,10 +46,10 @@ export default function FormAlumnoPage() {
     apellido_materno: "",
     // RHF permite undefined en defaultValues (via DefaultValues/DeepPartial)
     tipo_documento: "",
-    genero_id: "",
+    genero: "",
     grado_id: "",
     seccion_id: "",
-    numero_doc: "",
+    numero_documento: "",
     email: "",
   };
 
@@ -70,11 +70,11 @@ export default function FormAlumnoPage() {
         nombres: alumno.nombres,
         apellido_paterno: alumno.apellido_paterno,
         apellido_materno: alumno.apellido_materno,
-        tipo_documento: String(alumno.tipo_documento),
-        genero_id: String(alumno.genero_id),
+        tipo_documento: String(alumno.tipo_documento?.id ?? ""),
+        genero: String(alumno.genero?.id ?? ""),
         grado_id: String(alumno.grado_id),
         seccion_id: String(alumno.seccion_id),
-        numero_doc: alumno.numero_doc,
+        numero_documento: alumno.numero_documento ?? "",
         email: alumno.email,
       });
 
@@ -154,7 +154,7 @@ export default function FormAlumnoPage() {
 
                 <FormField
                   control={form.control}
-                  name="numero_doc"
+                  name="numero_documento"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Número documento</FormLabel>
@@ -193,45 +193,21 @@ export default function FormAlumnoPage() {
                   )}
                 />
 
-                {/* <CatalogSelectField
-                  control={form.control}
-                  name="tipo_documento"
-                  catalogo="TIPO_DOC"
-                  label="Tipo de documento"
-                /> */}
-
                 <SelectInput
                   control={form.control}
                   name="tipo_documento"
                   catalogo="TIPO_DOC"
                   label="Tipo de documento"
                 />
-                {/* <CatalogSelectField
-                  control={form.control}
-                  name="genero_id"
-                  catalogo="GENERO"
-                  label="Género"
-                /> */}
+
                 <SelectInput
                   control={form.control}
-                  name="genero_id"
+                  name="genero"
                   catalogo="GENERO"
                   label="Género"
                 />
-                {/* <CatalogSelectField
-                  control={form.control}
-                  name="grado_id"
-                  catalogo="GRADO"
-                  label="Grado"
-                /> */}
 
-                {/* <CatalogSelectField
-                  control={form.control}
-                  name="seccion_id"
-                  catalogo="SECCION"
-                  label="Sección"
-                /> */}
-                <SelectInput
+                {/* <SelectInput
                   control={form.control}
                   name="seccion_id"
                   catalogo="SECCION"
@@ -242,7 +218,7 @@ export default function FormAlumnoPage() {
                   name="grado_id"
                   catalogo="GRADO"
                   label="Grado"
-                />
+                /> */}
               </div>
 
               <div className="flex justify-end gap-3">

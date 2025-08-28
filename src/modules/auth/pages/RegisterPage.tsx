@@ -20,6 +20,7 @@ import { AlertCircleIcon, Loader2Icon } from "lucide-react";
 import { PasswordInput } from "@/components/password-input";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Axios from "@/lib/apiClient";
 
 const registerSchema = z
   .object({
@@ -38,8 +39,6 @@ export default function RegisterPage({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const navigate = useNavigate();
-  const setUser = useAuthStore((s) => s.setUser);
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<RegisterFormData>({
@@ -52,20 +51,24 @@ export default function RegisterPage({
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    const { data: authData, error } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-    });
+    const payload = registerSchema.omit({ confirmPassword: true }).parse(data);
 
-    if (error) {
-      setError(error.message);
-      return;
-    }
+    try {
+      const response = await Axios.post("/auth/register", {
+        ...payload,
+        nombres: "Aelexadasd",
+        apellido_paterno: "sbbbgadbwbr",
+        apellido_materno: "asdasasd",
+      });
+      console.log("💻 - onSubmit - response:", response);
 
-    if (authData.user) {
-      setError(null);
-      setUser(authData.user, authData.session);
-      navigate("/");
+      return response.data; // Aquí te devuelve la respuesta del backend
+    } catch (error: any) {
+      // Manejo de error
+      if (error.response) {
+        throw new Error(error.response.data.message || "Error en el registro");
+      }
+      throw new Error("Error de conexión con el servidor");
     }
   };
 

@@ -2,7 +2,6 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/auth.store";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -20,6 +19,14 @@ import { AlertCircleIcon, Loader2Icon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useEffect, useState } from "react";
+import Axios from "@/lib/apiClient";
+import type { AxiosError } from "axios";
+
+interface ErrorResponse {
+  statusCode: number;
+  message: string;
+  error: string;
+}
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
@@ -36,6 +43,7 @@ export default function LoginPage({
 }: React.ComponentProps<"form">) {
   const navigate = useNavigate();
   const setUser = useAuthStore((s) => s.setUser);
+  const setAccessToken = useAuthStore((s) => s.setAccessToken);
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoginFormData>({
@@ -47,21 +55,22 @@ export default function LoginPage({
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    const { data: authData, error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      const response = await Axios.post("/auth/login", data);
 
-    if (error) {
-      setError(error.message);
-      console.error("Error al iniciar sesión:", error);
-      return;
-    }
-
-    if (authData.user) {
       setError(null);
-      setUser(authData.user, authData.session);
+      setUser(response.data.user);
+      setAccessToken(response.data.accessToken);
       navigate("/"); // ir al dashboard (raíz protegida)
+      return response.data; // Aquí te devuelve la respuesta del backend
+    } catch (err) {
+      const error = err as AxiosError<ErrorResponse>;
+
+      if (error.response?.data?.message) {
+        setError(error.response.data.message);
+        throw new Error(error.response.data.message);
+      }
+      throw new Error("Error de conexión con el servidor");
     }
   };
 
@@ -146,9 +155,7 @@ export default function LoginPage({
             <Alert variant="destructive">
               <AlertCircleIcon />
               <AlertTitle>Error al iniciar sesión</AlertTitle>
-              <AlertDescription>
-                Please verify your information account.
-              </AlertDescription>
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">

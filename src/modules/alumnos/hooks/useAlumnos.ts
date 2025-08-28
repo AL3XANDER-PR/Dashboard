@@ -8,5 +8,6 @@ export const useAlumnos = (/* page: number, pageSize: number */) => {
     staleTime: 1000 * 60 * 5, // cache 5 minutos
     gcTime: 1000 * 60 * 10,
     // refetchOnWindowFocus: "always",
+    retry: 1,
   });
 };

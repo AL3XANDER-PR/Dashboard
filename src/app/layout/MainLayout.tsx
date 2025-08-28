@@ -20,7 +20,6 @@ import { AppSidebar } from "@/modules/dashboard/components/AppSidebar";
 import { Fullscreen, Maximize, Minimize, Shrink } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import React, { type JSX } from "react";
-import Sidebar from "@/shared/components/SideBar";
 
 export default function MainLayout(): JSX.Element {
   const { isFullscreen, toggleFullscreen } = useFullscreen();

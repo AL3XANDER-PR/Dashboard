@@ -61,95 +61,98 @@ export function SelectInput<T extends object>({
   placeholder = "Seleccione...",
   isClearable = true,
 }: CatalogSelectFieldProps<T>) {
-  const { data: opciones = [], isLoading } = useDetalleCatalogo(catalogo); // siempre array
+  const { data = [], isLoading } = useDetalleCatalogo(catalogo); // siempre array
 
   const options =
-    opciones?.map((item: { id: number; nombre: string }) => ({
+    data.detalles?.map((item: { id: number; nombre: string }) => ({
       value: String(item.id),
       label: item.nombre,
     })) || [];
 
   return (
     <div className="flex flex-col gap-1">
-      {label && (
+      {data.nombre && (
         <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-          {label}
+          {data.nombre}
         </label>
       )}
       <Controller
         control={control}
         name={name}
-        render={({ field }) => (
-          <Select
-            // {...field}
-            aria-label={`Select ${label}`}
-            unstyled
-            className="text-sm"
-            classNames={{
-              control: ({ isFocused }) =>
-                cn(
-                  "flex w-full items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow]",
-                  "border-input",
-                  "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring",
-                  "disabled:cursor-not-allowed disabled:opacity-50",
-                  "min-h-9", // = h-9
-                  "dark:bg-input/30 dark:hover:bg-input/50", // = h-9
-                  isFocused && "ring-[3px] ring-ring/50 border-ring"
-                ),
-              valueContainer: () => "p-0 gap-2",
-              placeholder: () => "text-muted-foreground",
-              singleValue: () => "text-foreground",
-              input: () => "text-foreground",
+        render={({ field }) => {
+          return (
+            <Select
+              // {...field}
+              aria-label={`Select ${data.nombre}`}
+              unstyled
+              className="text-sm"
+              classNames={{
+                control: ({ isFocused }) =>
+                  cn(
+                    "flex w-full items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow]",
+                    "border-input",
+                    "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring",
+                    "disabled:cursor-not-allowed disabled:opacity-50",
+                    "min-h-9", // = h-9
+                    "dark:bg-input/30 dark:hover:bg-input/50", // = h-9
+                    isFocused && "ring-[3px] ring-ring/50 border-ring"
+                  ),
+                valueContainer: () => "p-0 gap-2",
+                placeholder: () => "text-muted-foreground",
+                singleValue: () => "text-foreground",
+                input: () => "text-foreground",
 
-              indicatorsContainer: () => "gap-1",
-              dropdownIndicator: ({ selectProps }) =>
-                cn(
-                  "text-muted-foreground px-1",
-                  selectProps.menuIsOpen ? "rotate-180" : "rotate-0"
-                ),
-              clearIndicator: () =>
-                "px-1 text-muted-foreground hover:text-foreground",
-              indicatorSeparator: () => "bg-accent",
+                indicatorsContainer: () => "gap-1",
+                dropdownIndicator: ({ selectProps }) =>
+                  cn(
+                    "text-muted-foreground px-1",
+                    selectProps.menuIsOpen ? "rotate-180" : "rotate-0"
+                  ),
+                clearIndicator: () =>
+                  "px-1 text-muted-foreground hover:text-foreground",
+                indicatorSeparator: () => "bg-accent",
 
-              // Content
-              menu: () =>
-                cn(
-                  "relative z-50 mt-1 rounded-md border shadow-md",
-                  "bg-popover text-popover-foreground"
-                ),
-              menuList: () => "p-1 max-h-60 overflow-auto",
+                // Content
+                menu: () =>
+                  cn(
+                    "relative z-50 mt-1 rounded-md border shadow-md",
+                    "bg-popover text-popover-foreground"
+                  ),
+                menuList: () => "p-1 max-h-60 overflow-auto",
 
-              // Item
-              option: ({ isDisabled, isFocused }) =>
-                cn(
-                  "rounded-sm py-1.5 pr-8 pl-2 text-sm cursor-pointer select-none",
-                  isDisabled && "pointer-events-none opacity-50",
-                  isFocused
-                    ? "bg-accent text-accent-foreground"
-                    : "bg-transparent"
-                ),
+                // Item
+                option: ({ isDisabled, isFocused }) =>
+                  cn(
+                    "rounded-sm py-1.5 pr-8 pl-2 text-sm cursor-pointer select-none",
+                    isDisabled && "pointer-events-none opacity-50",
+                    isFocused
+                      ? "bg-accent text-accent-foreground"
+                      : "bg-transparent"
+                  ),
 
-              noOptionsMessage: () => "px-2 py-2 text-sm text-muted-foreground",
-              loadingMessage: () => "px-2 py-2 text-sm text-muted-foreground",
-            }}
-            classNamePrefix="custom-select"
-            isClearable={isClearable}
-            isLoading={isLoading}
-            placeholder={placeholder}
-            options={options}
-            onChange={(option) => field.onChange(option?.value || null)}
-            value={options.find((opt) => opt.value === field.value) || null}
-            components={{
-              DropdownIndicator: UnstyledDropdownIndicator,
-              IndicatorSeparator: UnstyledIndicatorSeparator,
-              ClearIndicator: UnstyledClearIndicator,
-              Option: UnstyledOption, // 👈 aquí va el check
-            }}
-            noOptionsMessage={() => "No se encontraron resultados"}
-            // isMulti
-            menuPlacement="auto"
-          />
-        )}
+                noOptionsMessage: () =>
+                  "px-2 py-2 text-sm text-muted-foreground",
+                loadingMessage: () => "px-2 py-2 text-sm text-muted-foreground",
+              }}
+              classNamePrefix="custom-select"
+              isClearable={isClearable}
+              isLoading={isLoading}
+              placeholder={placeholder}
+              options={options}
+              onChange={(option) => field.onChange(option?.value || null)}
+              value={options.find((opt) => opt.value === field.value) || null}
+              components={{
+                DropdownIndicator: UnstyledDropdownIndicator,
+                IndicatorSeparator: UnstyledIndicatorSeparator,
+                ClearIndicator: UnstyledClearIndicator,
+                Option: UnstyledOption, // 👈 aquí va el check
+              }}
+              noOptionsMessage={() => "No se encontraron resultados"}
+              // isMulti
+              menuPlacement="auto"
+            />
+          );
+        }}
       />
     </div>
   );
